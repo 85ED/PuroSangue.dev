@@ -1,72 +1,119 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="pt-br">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PuroSangue.dev</title>
 </head>
-
 <body>
     <h2>PuroSangue.dev</h2>
     <p><b>Cadastro de Cavalos</b></p>
-    Informe um cavalo: <input id="ipt_cavalo">
+    Informe a quantidade de cavalos: <input type="text" id="ipt_qtd"> <br><br>
+    Informe um cavalo: <input id="ipt_cavalo"><br><br>
     <button onclick="cadastrarCavalo()">Cadastrar Cavalo</button><br><br>
+    Informe a quantidade de voltas: <input type="text" id="ipt_voltas">
     <p><b>Iniciar Voltas do Torneio</b></p>
     <button onclick="volta()">Dar uma volta</button>
     <div id="txt_cavalo"></div>
-    <div id="txt_random"></div>
 </body>
-
 </html>
 
 <script>
-
+    // Aqui guardamos o nome dos cavalos
     var vt_cavalos = [];
-    var vt_tempos = [];
+
+    // Aqui guardamos o tempo total de cada cavalo
+    var vt_somatotal = [];
 
     function cadastrarCavalo() {
-
         var nomecavalo = ipt_cavalo.value;
 
-        if (ipt_cavalo != ``) {
-
-            vt_cavalos.push(nomecavalo);
-            ipt_cavalo.value = ``;
+        // Se o nome não estiver vazio
+        if (nomecavalo != ``) {
+            vt_cavalos.push(nomecavalo); // Guarda o nome do cavalo
+            vt_somatotal.push(0); // Começa com tempo zero
+            ipt_cavalo.value = ``; // Limpa o campo
             txt_cavalo.innerHTML += `${nomecavalo}, cadastrado no torneio!<br>`;
-
         } else {
-            alert(`Informe um cavalo!`);
+            alert(`Informe um cavalo uai!`);
         }
-
-
     }
 
     function volta() {
+        var voltasTotal = Number(ipt_voltas.value); // Pega o total de voltas digitado
 
-        if (vt_cavalos.length <= 3) {
-            alert(`Cadastre mais um cavalo, nosso mínimo é 3.`)
+        // Valida a quantidade de cavalos
+        if (vt_cavalos.length < 2 || vt_cavalos.length > 6) {
+            alert("Cadastre entre 2 e 6 cavalos.");
         } else {
+            // Valida a quantidade de voltas
+            if (voltasTotal < 5 || voltasTotal > 10) {
+                alert("Voltas devem estar entre 5 e 10.");
+            } else {
 
+                txt_cavalo.innerHTML = ""; // Limpa a área de texto
 
-            for (var i = 0; i < vt_cavalos.length; i++) {
-                var numeroaleatorio = (Math.random() * 2 + 7).toFixed(1);
-                vt_tempos.push(numeroaleatorio);
+                // Faz uma volta de cada vez com atraso (efeito suspense)
+                for (var volta = 1; volta <= voltasTotal; volta++) {
+
+                    (function(voltaAtual, rodada) {
+                        setTimeout(function () {
+
+                            txt_cavalo.innerHTML += `<b>Volta ${voltaAtual}</b><br>`;
+
+                            // Para cada cavalo, sorteia o tempo e soma ao total
+                            for (var i = 0; i < vt_cavalos.length; i++) {
+                                var tempo = Number((Math.random() * 2 + 7).toFixed(1)); // tempo entre 7.0 e 9.0
+                                vt_somatotal[i] += tempo;
+
+                                // Mostra tempo da volta e total
+                                txt_cavalo.innerHTML += `Cavalo ${vt_cavalos[i]} fez ${tempo}s - Acumulado: ${vt_somatotal[i].toFixed(1)}s<br>`;
+                            }
+
+                            // Agora vamos ver quem tá em 1º, 2º e 3º lugar
+                            var primeiro = 0;
+                            var segundo = 0;
+                            var terceiro = 0;
+
+                            for (var i = 1; i < vt_somatotal.length; i++) {
+                                if (vt_somatotal[i] < vt_somatotal[primeiro]) {
+                                    terceiro = segundo;
+                                    segundo = primeiro;
+                                    primeiro = i;
+                                } else if (vt_somatotal[i] < vt_somatotal[segundo] || primeiro == segundo) {
+                                    terceiro = segundo;
+                                    segundo = i;
+                                } else if (vt_somatotal[i] < vt_somatotal[terceiro] || segundo == terceiro) {
+                                    terceiro = i;
+                                }
+                            }
+
+                            // Mostra a classificação parcial
+                            txt_cavalo.innerHTML += `<u>Classificação Parcial:</u><br>`;
+                            txt_cavalo.innerHTML += `1º - ${vt_cavalos[primeiro]}<br>`;
+                            txt_cavalo.innerHTML += `2º - ${vt_cavalos[segundo]}<br>`;
+                            txt_cavalo.innerHTML += `3º - ${vt_cavalos[terceiro]}<br><hr>`;
+
+                            // Quando for a última volta, mostra o resultado final
+                            if (rodada == voltasTotal - 1) {
+                                setTimeout(function () {
+                                    txt_cavalo.innerHTML += `<h3>🏁 Resultado Final 🏁</h3>`;
+                                    txt_cavalo.innerHTML += `${vt_cavalos[primeiro]} - ${vt_somatotal[primeiro].toFixed(1)}s<br>`;
+                                    txt_cavalo.innerHTML += `${vt_cavalos[segundo]} - ${vt_somatotal[segundo].toFixed(1)}s<br>`;
+                                    txt_cavalo.innerHTML += `${vt_cavalos[terceiro]} - ${vt_somatotal[terceiro].toFixed(1)}s<br><br>`;
+
+                                    // Mostra todos os tempos do último para o primeiro (pra dar suspense)
+                                    txt_cavalo.innerHTML += `<h4>Tempos Finais (do último pro primeiro):</h4>`;
+                                    for (var i = vt_cavalos.length - 1; i >= 0; i--) {
+                                        txt_cavalo.innerHTML += `${vt_cavalos[i]} - ${vt_somatotal[i].toFixed(1)}s<br>`;
+                                    }
+                                }, 2000);
+                            }
+
+                        }, 3000 * rodada); // Cada volta acontece com um atraso de 3 segundos
+                    })(volta, volta - 1);
+                }
 
             }
-
-
-
-
-
         }
-
-        txt_random.innerHTML = `${numeroaleatorio}`
-
-
     }
-
-
-
-
 </script>
