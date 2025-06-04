@@ -1,11 +1,72 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PuroSangue.dev</title>
 </head>
+
 <body>
     <h2>PuroSangue.dev</h2>
+    <p><b>Cadastro de Cavalos</b></p>
+    Informe um cavalo: <input id="ipt_cavalo">
+    <button onclick="cadastrarCavalo()">Cadastrar Cavalo</button><br><br>
+    <p><b>Iniciar Voltas do Torneio</b></p>
+    <button onclick="volta()">Dar uma volta</button>
+    <div id="txt_cavalo"></div>
+    <div id="txt_random"></div>
 </body>
+
 </html>
+
+<script>
+
+    var vt_cavalos = [];
+    var vt_tempos = [];
+
+    function cadastrarCavalo() {
+
+        var nomecavalo = ipt_cavalo.value;
+
+        if (ipt_cavalo != ``) {
+
+            vt_cavalos.push(nomecavalo);
+            ipt_cavalo.value = ``;
+            txt_cavalo.innerHTML += `${nomecavalo}, cadastrado no torneio!<br>`;
+
+        } else {
+            alert(`Informe um cavalo!`);
+        }
+
+
+    }
+
+    function volta() {
+
+        if (vt_cavalos.length <= 3) {
+            alert(`Cadastre mais um cavalo, nosso mínimo é 3.`)
+        } else {
+
+
+            for (var i = 0; i < vt_cavalos.length; i++) {
+                var numeroaleatorio = (Math.random() * 2 + 7).toFixed(1);
+                vt_tempos.push(numeroaleatorio);
+
+            }
+
+
+
+
+
+        }
+
+        txt_random.innerHTML = `${numeroaleatorio}`
+
+
+    }
+
+
+
+
+</script>
