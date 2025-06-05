@@ -14,7 +14,7 @@
             <img src="img/logo.png" id="imgLogo" alt="">
 
             <div id="loader" style="display:none; text-align:center;">
-                <img src="img/horse run gif.gif" alt="Carregando..." width="100">
+                <img src="img/cavalodoido.gif" alt="Carregando..." width="100">
                 <p>Preparando os cavalos...</p>
             </div>
 
@@ -33,146 +33,114 @@
             <p><b>Iniciar Voltas do Torneio</b></p>
             <button onclick="volta()">Dar uma volta</button>
         </div>
+
         <div id="txt_cavalo"></div>
     </div>
-</body>
 
-</html>
+    <audio autoplay>
+        <source src="" type="">
+    </audio>
 
-<script>
-    // Aqui guardamos o nome dos cavalos
-    var vt_cavalos = [];
+    <script>
+        var vt_cavalos = [];
+        var vt_somatotal = [];
 
-    // Aqui guardamos o tempo total de cada cavalo
-    var vt_somatotal = [];
+        function cadastrarCavalo() {
+            var nomecavalo = ipt_cavalo.value;
+            var quantidadeCavalo = Number(ipt_qtd.value);
 
-    function cadastrarCavalo() {
-        var nomecavalo = ipt_cavalo.value;
-        var quantidadeCavalo = Number(ipt_qtd.value);
+            if (nomecavalo === "") {
+                alert("Informe o nome do cavalo!");
+                return;
+            }
 
-        if (nomecavalo == "") {
-            alert("Informe o nome do cavalo!");
-            return;
-        }
+            if (vt_cavalos.length >= quantidadeCavalo) {
+                alert(`Você já cadastrou todos os ${quantidadeCavalo} cavalos.`);
+                return;
+            }
 
-        if (vt_cavalos.length >= quantidadeCavalo) {
-            alert(`Você já cadastrou todos os ${quantidadeCavalo} cavalos.`);
-            return;
-        }
+            document.getElementById("txt_cavalo").style.display = "flex";
 
-        var listagemCavalos = document.getElementById("txt_cavalo");
-        listagemCavalos.style.display = "flex";
+            vt_cavalos.push(nomecavalo);
+            vt_somatotal.push(0);
+            ipt_cavalo.value = "";
+            txt_cavalo.innerHTML += `<span> <b style="color: var(--red)">${nomecavalo}</b>, cadastrado no torneio! </span><br>`;
 
-        vt_cavalos.push(nomecavalo);
-        vt_somatotal.push(0);
-        ipt_cavalo.value = "";
-        txt_cavalo.innerHTML += `<span> <b style="color: var(--red)">${nomecavalo} </b>, cadastrado no torneio! </span>`;
-
-        // Se acabou de cadastrar o último cavalo
-        if (vt_cavalos.length === quantidadeCavalo) {
-            document.getElementById("voltasContent").style.display = "flex"
-            document.getElementById("voltasContent").style.marginTop = "5rem"
-            document.getElementById("cavaloContent").style.display = 'none';
-            document.getElementById("title").style.display = 'none';
-            document.getElementById("txt_cavalo").style.display = 'none';
-            /*document.getElementById("btnIniciar").style.display = 'none';
-            document.getElementById("imgLogo").style.marginTop = "5rem";*/
-        }
-    }
-
-    function volta() {
-         document.getElementById("loader").style.display = "flex"; // Mostrar loader
-            document.getElementById("loader").style.marginTop = "5rem"; // Mostrar loader
-         setTimeout(() => {
-                document.getElementById("loader").style.display = "none"; // Esconde loader após 3s
-                document.getElementById("imgLogo").style.marginTop = "0rem";
-                var listagemCavalos = document.getElementById("txt_cavalo");
-                alert("Todos os cavalos foram cadastrados! Agora você pode iniciar o torneio.");
-            }, 3000);
-        var voltasTotal = Number(ipt_voltas.value); // Pega o total de voltas digitado
-
-        // Valida a quantidade de cavalos
-        if (vt_cavalos.length < 2 && vt_cavalos.length > 6) {
-            alert("Cadastre entre 2 e 6 cavalos.");
-        } else {
-            // Valida a quantidade de voltas
-            if (voltasTotal < 5 || voltasTotal > 10) {
-                alert("Voltas devem estar entre 5 e 10.");
-            } else {
-
-                txt_cavalo.innerHTML = ""; // Limpa a área de texto
-
-                // Faz uma volta de cada vez com atraso (efeito suspense)
-                for (var volta = 1; volta <= voltasTotal; volta++) {
-
-                    (function (voltaAtual, rodada) {
-                        setTimeout(function () {
-
-                            txt_cavalo.innerHTML += `<b>Volta ${voltaAtual}</b><br>`;
-
-                            // Para cada cavalo, sorteia o tempo e soma ao total
-                            for (var i = 0; i < vt_cavalos.length; i++) {
-                                var tempo = Number((Math.random() * 2 + 7).toFixed(1)); // tempo entre 7.0 e 9.0
-                                vt_somatotal[i] += tempo;
-
-                                // Mostra tempo da volta e total
-                                txt_cavalo.innerHTML += `Cavalo ${vt_cavalos[i]} fez ${tempo}s - Acumulado: ${vt_somatotal[i].toFixed(1)}s<br>`;
-                            }
-
-                            // Agora vamos ver quem tá em 1º, 2º e 3º lugar
-                            var primeiro = 0;
-                            var segundo = 0;
-                            var terceiro = 0;
-
-                            for (var i = 1; i < vt_somatotal.length; i++) {
-                                if (vt_somatotal[i] < vt_somatotal[primeiro]) {
-                                    terceiro = segundo;
-                                    segundo = primeiro;
-                                    primeiro = i;
-                                } else if (vt_somatotal[i] < vt_somatotal[segundo] || primeiro == segundo) {
-                                    terceiro = segundo;
-                                    segundo = i;
-                                } else if (vt_somatotal[i] < vt_somatotal[terceiro] || segundo == terceiro) {
-                                    terceiro = i;
-                                }
-                            }
-
-                            // Mostra a classificação parcial
-                            txt_cavalo.innerHTML += `<u>Classificação Parcial:</u><br>`;
-                            txt_cavalo.innerHTML += `1º - ${vt_cavalos[primeiro]}<br>`;
-                            txt_cavalo.innerHTML += `2º - ${vt_cavalos[segundo]}<br>`;
-                            txt_cavalo.innerHTML += `3º - ${vt_cavalos[terceiro]}<br><hr>`;
-
-                            // Quando for a última volta, mostra o resultado final
-                            if (rodada == voltasTotal - 1) {
-                                setTimeout(function () {
-                                    txt_cavalo.innerHTML += `<h3> Pódio PuroSangue.Dev </h3>`;
-                                    txt_cavalo.innerHTML += `${vt_cavalos[primeiro]} - ${vt_somatotal[primeiro].toFixed(1)}s<br>`;
-                                    txt_cavalo.innerHTML += `${vt_cavalos[segundo]} - ${vt_somatotal[segundo].toFixed(1)}s<br>`;
-                                    txt_cavalo.innerHTML += `${vt_cavalos[terceiro]} - ${vt_somatotal[terceiro].toFixed(1)}s<br><br>`;
-
-                                    // Mostra todos os tempos do último para o primeiro (pra dar suspense)
-                                    txt_cavalo.innerHTML += `<h4>Tempos Finais (do último pro primeiro):</h4>`;
-                                    for (var i = vt_cavalos.length - 1; i >= 0; i--) {
-                                        txt_cavalo.innerHTML += `${vt_cavalos[i]} - ${vt_somatotal[i].toFixed(1)}s<br>`;
-                                    }
-                                }, 2000);
-                            }
-
-                        }, 3000 * rodada); // Cada volta acontece com um atraso de 3 segundos
-                    })(volta, volta - 1);
-                }
-
+            if (vt_cavalos.length === quantidadeCavalo) {
+                document.getElementById("voltasContent").style.display = "flex";
+                document.getElementById("voltasContent").style.marginTop = "5rem";
+                document.getElementById("cavaloContent").style.display = 'none';
+                document.getElementById("title").style.display = 'none';
+                document.getElementById("txt_cavalo").style.display = 'none';
             }
         }
-    }
 
-    function iniciar() {
-        var botaoIniciar = document.getElementById("btnIniciar");
-        var cavaloConteudo = document.getElementById("cavaloContent");
-        botaoIniciar.style.display = 'none';
-        cavaloConteudo.style.display = 'flex';
-        cavaloConteudo.style.marginTop = '-5rem';
+        function volta() {
+            var voltasTotal = Number(ipt_voltas.value);
 
-    }
-</script>
+            if (vt_cavalos.length < 2 || vt_cavalos.length > 6) {
+                alert("Cadastre entre 2 e 6 cavalos.");
+                return;
+            }
+
+            if (voltasTotal < 5 || voltasTotal > 10) {
+                alert("Voltas devem estar entre 5 e 10.");
+                return;
+            }
+
+            txt_cavalo.innerHTML = "";
+            document.getElementById("txt_cavalo").style.display = "block";
+            document.getElementById("loader").style.display = "flex";
+            document.getElementById("loader").style.marginTop = "5rem";
+
+            for (let volta = 1; volta <= voltasTotal; volta++) {
+                (function (voltaAtual, rodada) {
+                    setTimeout(function () {
+                        txt_cavalo.innerHTML += `<b>Volta ${voltaAtual}</b><br>`;
+
+                        for (let i = 0; i < vt_cavalos.length; i++) {
+                            let tempo = Number((Math.random() * 2 + 7).toFixed(1));
+                            vt_somatotal[i] += tempo;
+                            txt_cavalo.innerHTML += `Cavalo ${vt_cavalos[i]} fez ${tempo}s - Acumulado: ${vt_somatotal[i].toFixed(1)}s<br>`;
+                        }
+
+                        let indicesOrdenados = vt_somatotal.map((v, i) => i)
+                            .sort((a, b) => vt_somatotal[a] - vt_somatotal[b]);
+
+                        txt_cavalo.innerHTML += `<u>Classificação Parcial:</u><br>`;
+                        txt_cavalo.innerHTML += `1º - ${vt_cavalos[indicesOrdenados[0]]}<br>`;
+                        txt_cavalo.innerHTML += `2º - ${vt_cavalos[indicesOrdenados[1]]}<br>`;
+                        txt_cavalo.innerHTML += `3º - ${vt_cavalos[indicesOrdenados[2]]}<br><hr>`;
+
+                        if (rodada === voltasTotal - 1) {
+                            setTimeout(() => {
+                                txt_cavalo.innerHTML += `<h3>Pódio PuroSangue.Dev</h3>`;
+                                txt_cavalo.innerHTML += `${vt_cavalos[indicesOrdenados[0]]} - ${vt_somatotal[indicesOrdenados[0]].toFixed(1)}s<br>`;
+                                txt_cavalo.innerHTML += `${vt_cavalos[indicesOrdenados[1]]} - ${vt_somatotal[indicesOrdenados[1]].toFixed(1)}s<br>`;
+                                txt_cavalo.innerHTML += `${vt_cavalos[indicesOrdenados[2]]} - ${vt_somatotal[indicesOrdenados[2]].toFixed(1)}s<br><br>`;
+
+                                txt_cavalo.innerHTML += `<h4>Tempos Finais (do último pro primeiro):</h4>`;
+                                for (let i = indicesOrdenados.length - 1; i >= 0; i--) {
+                                    txt_cavalo.innerHTML += `${vt_cavalos[indicesOrdenados[i]]} - ${vt_somatotal[indicesOrdenados[i]].toFixed(1)}s<br>`;
+                                }
+
+                                document.getElementById("loader").style.display = "none";
+
+                            }, 3000); // Espera 3s após a última volta
+                        }
+
+                    }, 3000 * rodada);
+                })(volta, volta - 1);
+            }
+        }
+
+        function iniciar() {
+            document.getElementById("btnIniciar").style.display = 'none';
+            var cavaloConteudo = document.getElementById("cavaloContent");
+            cavaloConteudo.style.display = 'flex';
+            cavaloConteudo.style.marginTop = '-5rem';
+        }
+    </script>
+
+</body>
+</html>
