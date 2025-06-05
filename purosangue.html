@@ -1,20 +1,42 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <title>PuroSangue.dev</title>
+    <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-    <h2>PuroSangue.dev</h2>
-    <p><b>Cadastro de Cavalos</b></p>
-    Informe a quantidade de cavalos: <input type="text" id="ipt_qtd"> <br><br>
-    Informe um cavalo: <input id="ipt_cavalo"><br><br>
-    <button onclick="cadastrarCavalo()">Cadastrar Cavalo</button><br><br>
-    Informe a quantidade de voltas: <input type="text" id="ipt_voltas">
-    <p><b>Iniciar Voltas do Torneio</b></p>
-    <button onclick="volta()">Dar uma volta</button>
-    <div id="txt_cavalo"></div>
+
+    <div class="content">
+        <div class="title">
+            <img src="img/logo.png" id="imgLogo" alt="">
+
+            <div id="loader" style="display:none; text-align:center;">
+                <img src="img/horse run gif.gif" alt="Carregando..." width="100">
+                <p>Preparando os cavalos...</p>
+            </div>
+
+            <button onclick="iniciar()" id="btnIniciar">Iniciar Jogo</button>
+        </div>
+
+        <div class="cavaloContent" id="cavaloContent">
+            <p><b>Cadastro de Cavalos</b></p>
+            Informe a quantidade de cavalos: <input type="text" id="ipt_qtd"><br>
+            Informe um cavalo: <input id="ipt_cavalo"><br>
+            <button onclick="cadastrarCavalo()">Cadastrar Cavalo</button><br><br>
+        </div>
+
+        <div class="voltasContent">
+            Informe a quantidade de voltas: <input type="text" id="ipt_voltas">
+            <p><b>Iniciar Voltas do Torneio</b></p>
+            <button onclick="volta()">Dar uma volta</button>
+        </div>
+        <div id="txt_cavalo"></div>
+    </div>
 </body>
+
 </html>
 
 <script>
@@ -26,15 +48,36 @@
 
     function cadastrarCavalo() {
         var nomecavalo = ipt_cavalo.value;
+        var quantidadeCavalo = Number(ipt_qtd.value);
 
-        // Se o nome não estiver vazio
-        if (nomecavalo != ``) {
-            vt_cavalos.push(nomecavalo); // Guarda o nome do cavalo
-            vt_somatotal.push(0); // Começa com tempo zero
-            ipt_cavalo.value = ``; // Limpa o campo
-            txt_cavalo.innerHTML += `${nomecavalo}, cadastrado no torneio!<br>`;
-        } else {
-            alert(`Informe um cavalo uai!`);
+        if (nomecavalo == "") {
+            alert("Informe o nome do cavalo!");
+            return;
+        }
+
+        if (vt_cavalos.length >= quantidadeCavalo) {
+            alert(`Você já cadastrou todos os ${quantidadeCavalo} cavalos.`);
+            return;
+        }
+
+        vt_cavalos.push(nomecavalo);
+        vt_somatotal.push(0);
+        ipt_cavalo.value = "";
+        txt_cavalo.innerHTML += `${nomecavalo}, cadastrado no torneio!<br>`;
+
+        // Se acabou de cadastrar o último cavalo
+        if (vt_cavalos.length === quantidadeCavalo) {
+            document.getElementById("loader").style.display = "flex"; // Mostrar loader
+            document.getElementById("loader").style.marginTop = "5rem"; // Mostrar loader
+            document.getElementById("btnIniciar").style.display = 'none';
+            document.getElementById("cavaloContent").style.display = 'none';
+            document.getElementById("imgLogo").style.marginTop = "5rem";
+
+            setTimeout(() => {
+                document.getElementById("loader").style.display = "none"; // Esconde loader após 7s
+                document.getElementById("imgLogo").style.marginTop = "0rem";
+                alert("Todos os cavalos foram cadastrados! Agora você pode iniciar o torneio.");
+            }, 7000);
         }
     }
 
@@ -42,7 +85,7 @@
         var voltasTotal = Number(ipt_voltas.value); // Pega o total de voltas digitado
 
         // Valida a quantidade de cavalos
-        if (vt_cavalos.length < 2 || vt_cavalos.length > 6) {
+        if (vt_cavalos.length < 2 && vt_cavalos.length > 6) {
             alert("Cadastre entre 2 e 6 cavalos.");
         } else {
             // Valida a quantidade de voltas
@@ -55,7 +98,7 @@
                 // Faz uma volta de cada vez com atraso (efeito suspense)
                 for (var volta = 1; volta <= voltasTotal; volta++) {
 
-                    (function(voltaAtual, rodada) {
+                    (function (voltaAtual, rodada) {
                         setTimeout(function () {
 
                             txt_cavalo.innerHTML += `<b>Volta ${voltaAtual}</b><br>`;
@@ -115,5 +158,14 @@
 
             }
         }
+    }
+
+    function iniciar() {
+        var botaoIniciar = document.getElementById("btnIniciar");
+        var cavaloConteudo = document.getElementById("cavaloContent");
+        botaoIniciar.style.display = 'none';
+        cavaloConteudo.style.display = 'flex';
+        cavaloConteudo.style.marginTop = '-5rem';
+
     }
 </script>
