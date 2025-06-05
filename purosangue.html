@@ -10,7 +10,7 @@
 <body>
 
     <div class="content">
-        <div class="title">
+        <div class="title" id="title">
             <img src="img/logo.png" id="imgLogo" alt="">
 
             <div id="loader" style="display:none; text-align:center;">
@@ -28,7 +28,7 @@
             <button onclick="cadastrarCavalo()">Cadastrar Cavalo</button><br><br>
         </div>
 
-        <div class="voltasContent">
+        <div class="voltasContent" id="voltasContent">
             Informe a quantidade de voltas: <input type="text" id="ipt_voltas">
             <p><b>Iniciar Voltas do Torneio</b></p>
             <button onclick="volta()">Dar uma volta</button>
@@ -60,28 +60,35 @@
             return;
         }
 
+        var listagemCavalos = document.getElementById("txt_cavalo");
+        listagemCavalos.style.display = "flex";
+
         vt_cavalos.push(nomecavalo);
         vt_somatotal.push(0);
         ipt_cavalo.value = "";
-        txt_cavalo.innerHTML += `${nomecavalo}, cadastrado no torneio!<br>`;
+        txt_cavalo.innerHTML += `<span> <b style="color: var(--red)">${nomecavalo} </b>, cadastrado no torneio! </span>`;
 
         // Se acabou de cadastrar o último cavalo
         if (vt_cavalos.length === quantidadeCavalo) {
-            document.getElementById("loader").style.display = "flex"; // Mostrar loader
-            document.getElementById("loader").style.marginTop = "5rem"; // Mostrar loader
-            document.getElementById("btnIniciar").style.display = 'none';
+            document.getElementById("voltasContent").style.display = "flex"
+            document.getElementById("voltasContent").style.marginTop = "5rem"
             document.getElementById("cavaloContent").style.display = 'none';
-            document.getElementById("imgLogo").style.marginTop = "5rem";
-
-            setTimeout(() => {
-                document.getElementById("loader").style.display = "none"; // Esconde loader após 7s
-                document.getElementById("imgLogo").style.marginTop = "0rem";
-                alert("Todos os cavalos foram cadastrados! Agora você pode iniciar o torneio.");
-            }, 7000);
+            document.getElementById("title").style.display = 'none';
+            document.getElementById("txt_cavalo").style.display = 'none';
+            /*document.getElementById("btnIniciar").style.display = 'none';
+            document.getElementById("imgLogo").style.marginTop = "5rem";*/
         }
     }
 
     function volta() {
+         document.getElementById("loader").style.display = "flex"; // Mostrar loader
+            document.getElementById("loader").style.marginTop = "5rem"; // Mostrar loader
+         setTimeout(() => {
+                document.getElementById("loader").style.display = "none"; // Esconde loader após 3s
+                document.getElementById("imgLogo").style.marginTop = "0rem";
+                var listagemCavalos = document.getElementById("txt_cavalo");
+                alert("Todos os cavalos foram cadastrados! Agora você pode iniciar o torneio.");
+            }, 3000);
         var voltasTotal = Number(ipt_voltas.value); // Pega o total de voltas digitado
 
         // Valida a quantidade de cavalos
