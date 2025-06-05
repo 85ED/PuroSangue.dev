@@ -35,6 +35,8 @@
         </div>
 
         <div id="txt_cavalo"></div>
+        <div id="txt_volta"></div>
+        <div id="txt_podio"></div>
     </div>
 
     <audio autoplay>
@@ -89,37 +91,41 @@
             }
 
             txt_cavalo.innerHTML = "";
-            document.getElementById("txt_cavalo").style.display = "block";
+            document.getElementById("txt_cavalo").style.display = "none";
             document.getElementById("loader").style.display = "flex";
             document.getElementById("loader").style.marginTop = "5rem";
-
+            document.getElementById("txt_volta").style.display = "flex";
+            document.getElementById("txt_podio").style.display = "flex";
+            
             for (let volta = 1; volta <= voltasTotal; volta++) {
                 (function (voltaAtual, rodada) {
                     setTimeout(function () {
-                        txt_cavalo.innerHTML += `<b>Volta ${voltaAtual}</b><br>`;
-
+                         txt_podio.innerHTML = "";
                         for (let i = 0; i < vt_cavalos.length; i++) {
                             let tempo = Number((Math.random() * 2 + 7).toFixed(1));
                             vt_somatotal[i] += tempo;
-                            txt_cavalo.innerHTML += `Cavalo ${vt_cavalos[i]} fez ${tempo}s - Acumulado: ${vt_somatotal[i].toFixed(1)}s<br>`;
+                            txt_volta.innerHTML = `<b>Volta ${voltaAtual}</b> `;
+
+                            txt_podio.innerHTML += `<br> Cavalo ${vt_cavalos[i]} fez ${tempo}s - Acumulado: 
+                            ${vt_somatotal[i].toFixed(1)}s<br>`
                         }
 
                         let indicesOrdenados = vt_somatotal.map((v, i) => i)
                             .sort((a, b) => vt_somatotal[a] - vt_somatotal[b]);
 
-                        txt_cavalo.innerHTML += `<u>Classificação Parcial:</u><br>`;
-                        txt_cavalo.innerHTML += `1º - ${vt_cavalos[indicesOrdenados[0]]}<br>`;
-                        txt_cavalo.innerHTML += `2º - ${vt_cavalos[indicesOrdenados[1]]}<br>`;
-                        txt_cavalo.innerHTML += `3º - ${vt_cavalos[indicesOrdenados[2]]}<br><hr>`;
+                        txt_podio.innerHTML += `<u>Classificação Parcial:</u><br>`;
+                        txt_podio.innerHTML += `1º - ${vt_cavalos[indicesOrdenados[0]]}<br>`;
+                        txt_podio.innerHTML += `2º - ${vt_cavalos[indicesOrdenados[1]]}<br>`;
+                        txt_podio.innerHTML += `3º - ${vt_cavalos[indicesOrdenados[2]]}<br><hr>`;
 
                         if (rodada === voltasTotal - 1) {
                             setTimeout(() => {
-                                txt_cavalo.innerHTML += `<h3>Pódio PuroSangue.Dev</h3>`;
-                                txt_cavalo.innerHTML += `${vt_cavalos[indicesOrdenados[0]]} - ${vt_somatotal[indicesOrdenados[0]].toFixed(1)}s<br>`;
-                                txt_cavalo.innerHTML += `${vt_cavalos[indicesOrdenados[1]]} - ${vt_somatotal[indicesOrdenados[1]].toFixed(1)}s<br>`;
-                                txt_cavalo.innerHTML += `${vt_cavalos[indicesOrdenados[2]]} - ${vt_somatotal[indicesOrdenados[2]].toFixed(1)}s<br><br>`;
+                                txt_podio.innerHTML += `<h3>Pódio PuroSangue.Dev</h3>`;
+                                txt_podio.innerHTML += `${vt_cavalos[indicesOrdenados[0]]} - ${vt_somatotal[indicesOrdenados[0]].toFixed(1)}s<br>`;
+                                txt_podio.innerHTML += `${vt_cavalos[indicesOrdenados[1]]} - ${vt_somatotal[indicesOrdenados[1]].toFixed(1)}s<br>`;
+                                txt_podio.innerHTML += `${vt_cavalos[indicesOrdenados[2]]} - ${vt_somatotal[indicesOrdenados[2]].toFixed(1)}s<br><br>`;
 
-                                txt_cavalo.innerHTML += `<h4>Tempos Finais (do último pro primeiro):</h4>`;
+                                txt_podio.innerHTML += `<h4>Tempos Finais (do último pro primeiro):</h4>`;
                                 for (let i = indicesOrdenados.length - 1; i >= 0; i--) {
                                     txt_cavalo.innerHTML += `${vt_cavalos[indicesOrdenados[i]]} - ${vt_somatotal[indicesOrdenados[i]].toFixed(1)}s<br>`;
                                 }
