@@ -1,152 +1,199 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-
 <head>
-    <meta charset="UTF-8">
-    <title>PuroSangue.dev</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <title>PuroSangue.dev</title>
+  <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
-    <div class="content">
-        <div class="title" id="title">
-            <img src="img/logo.png" id="imgLogo" alt="">
-
-            <div id="loader" style="display:none; text-align:center;">
-                <img src="img/cavalodoido.gif" alt="Carregando..." width="100">
-                <p>Preparando os cavalos...</p>
-            </div>
-
-            <button onclick="iniciar()" id="btnIniciar">Iniciar Jogo</button>
-        </div>
-
-        <div class="cavaloContent" id="cavaloContent">
-            <p><b>Cadastro de Cavalos</b></p>
-            Informe a quantidade de cavalos: <input type="text" id="ipt_qtd"><br>
-            Informe um cavalo: <input id="ipt_cavalo"><br>
-            <button onclick="cadastrarCavalo()">Cadastrar Cavalo</button><br><br>
-        </div>
-
-        <div class="voltasContent" id="voltasContent">
-            Informe a quantidade de voltas: <input type="text" id="ipt_voltas">
-            <p><b>Iniciar Voltas do Torneio</b></p>
-            <button onclick="volta()">Dar uma volta</button>
-        </div>
-
-        <div id="txt_cavalo"></div>
-        <div id="txt_volta"></div>
-        <div id="txt_podio"></div>
+  <div class="content">
+    <div class="title" id="title">
+      <img src="img/logo.png" id="imgLogo" alt="Logo">
+      <div id="loader" style="display:none; text-align:center;">
+        <img src="img/cavalodoido.gif" alt="Carregando..." width="100">
+        <p>Preparando os cavalos...</p>
+      </div>
+      <button onclick="iniciar()" id="btnIniciar">Iniciar Jogo</button>
     </div>
 
-    <audio autoplay>
-        <source src="" type="">
-    </audio>
+    <div class="cavaloContent" id="cavaloContent">
+      <p><b>Cadastro de Cavalos</b></p>
+      Informe a quantidade de cavalos (de 3 a 6): <input type="text" id="ipt_qtd"><br>
+      Informe um cavalo: <input id="ipt_cavalo"><br>
+      <button onclick="cadastrarCavalo()">Cadastrar Cavalo</button>
+    </div>
 
-    <script>
-        var vt_cavalos = [];
-        var vt_somatotal = [];
+    <div class="voltasContent" id="voltasContent">
+      Informe a quantidade de voltas (de 5 a 10): <input type="text" id="ipt_voltas">
+      <p><b>Iniciar Voltas do Torneio</b></p>
+      <button onclick="volta()">Agora!</button>
+    </div>
 
-        function cadastrarCavalo() {
-            var nomecavalo = ipt_cavalo.value;
-            var quantidadeCavalo = Number(ipt_qtd.value);
+    <div id="txt_volta"></div>
+    <div id="txt_podio"></div>
+    <div id="txt_cavalo"></div>
+  </div>
 
-            if (nomecavalo === "") {
-                alert("Informe o nome do cavalo!");
-                return;
+  <audio id="musicaFundo" autoplay loop>
+    <source src="audio/1.mp3" type="audio/mpeg">
+  </audio>
+
+  <script>
+    var vt_cavalos = [];
+    var vt_somatotal = [];
+
+    window.addEventListener("DOMContentLoaded", function () {
+      var musica = document.getElementById("musicaFundo");
+      var tentativa = musica.play();
+      if (tentativa !== undefined) {
+        tentativa.catch(() => {
+          console.log("Autoplay bloqueado.");
+        });
+      }
+    });
+
+    function trocarMusica(numero) {
+      var musica = document.getElementById("musicaFundo");
+      musica.pause();
+      musica.src = `audio/${numero}.mp3`;
+      musica.load();
+      musica.play();
+    }
+
+    function iniciar() {
+      document.getElementById("btnIniciar").style.display = 'none';
+      document.getElementById("cavaloContent").style.display = 'flex';
+      document.getElementById("cavaloContent").style.marginTop = '0';
+      document.getElementById("musicaFundo").play();
+    }
+
+    function cadastrarCavalo() {
+  var nome = ipt_cavalo.value;
+  var qtd = Number(ipt_qtd.value);
+
+  if (qtd < 3 || qtd > 6) {
+    alert("A quantidade de cavalos deve ser entre 3 e 6.");
+    return;
+  }
+
+  if (nome === "") {
+    alert("Informe o nome do cavalo!");
+    return;
+  }
+
+  if (vt_cavalos.length >= qtd) {
+    alert(`Você já cadastrou todos os ${qtd} cavalos.`);
+    return;
+  }
+
+  vt_cavalos.push(nome);
+  vt_somatotal.push(0);
+  ipt_cavalo.value = "";
+
+  exibirCavalosComGif();
+
+  if (vt_cavalos.length === qtd) {
+    document.getElementById("voltasContent").style.display = "flex";
+    document.getElementById("cavaloContent").style.display = "none";
+    document.getElementById("title").style.display = "none";
+  }
+}
+
+
+    function exibirCavalosComGif() {
+      var div = document.getElementById("txt_cavalo");
+      div.style.display = "flex";
+      div.style.flexDirection = "column";
+      div.innerHTML = `<h3>Cavalos Cadastrados</h3>`;
+
+      for (var index = 0; index < vt_cavalos.length; index++) {
+        div.innerHTML += `
+          <div style="display: flex; align-items: center; gap: 0.5rem; margin: 0.3rem 0;">
+            <img src="img/cavalo-correndo.gif" width="40" height="30" alt="gif">
+            <span><b>${vt_cavalos[index]}</b></span>
+          </div>
+        `;
+      }
+    }
+
+    function volta() {
+      var voltasTotal = Number(ipt_voltas.value);
+
+      if (vt_cavalos.length < 3 || vt_cavalos.length > 6) {
+        alert("Cadastre entre 3 e 6 cavalos.");
+        return;
+      }
+
+      if (voltasTotal < 5 || voltasTotal > 10) {
+        alert("Voltas devem estar entre 5 e 10.");
+        return;
+      }
+
+      document.getElementById("voltasContent").style.display = "none";
+      trocarMusica(2);
+      document.getElementById("txt_volta").style.display = "flex";
+      document.getElementById("txt_podio").style.display = "flex";
+      document.getElementById("loader").style.display = "flex";
+      document.getElementById("txt_cavalo").style.display = "none";
+
+      for (let volta = 1; volta <= voltasTotal; volta++) {
+        (function (voltaAtual, rodada) {
+          setTimeout(function () {
+            txt_podio.innerHTML = "";
+
+            for (let i = 0; i < vt_cavalos.length; i++) {
+              let tempo = Number((Math.random() * 2 + 7).toFixed(1));
+              vt_somatotal[i] += tempo;
+              txt_volta.innerHTML = `<b>Volta ${voltaAtual}</b>`;
+              txt_podio.innerHTML += `
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                  <img src="img/cavalo-correndo.gif" width="40" height="30">
+                  ${vt_cavalos[i]} fez ${tempo}s - Acumulado: ${vt_somatotal[i].toFixed(1)}s
+                </div>`;
             }
 
-            if (vt_cavalos.length >= quantidadeCavalo) {
-                alert(`Você já cadastrou todos os ${quantidadeCavalo} cavalos.`);
-                return;
+            let ordem = vt_somatotal.map((v, i) => i).sort((a, b) => vt_somatotal[a] - vt_somatotal[b]);
+
+            txt_podio.innerHTML += `<u>Classificação Parcial:</u><br>`;
+            txt_podio.innerHTML += `1º - ${vt_cavalos[ordem[0]]}<br>`;
+            txt_podio.innerHTML += `2º - ${vt_cavalos[ordem[1]]}<br>`;
+            txt_podio.innerHTML += `3º - ${vt_cavalos[ordem[2]]}<br><hr>`;
+
+            if (rodada === voltasTotal - 1) {
+              setTimeout(() => {
+                document.getElementById("txt_volta").style.display = "none";
+                document.getElementById("txt_podio").style.display = "none";
+                document.getElementById("txt_cavalo").style.display = "flex";
+                document.getElementById("loader").style.display = "none";
+
+                txt_cavalo.innerHTML = `<h3>Pódio PuroSangue.Dev</h3>`;
+                for (let i = 0; i < 3; i++) {
+                  txt_cavalo.innerHTML += `
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                      <img src="img/cavalo-correndo.gif" width="40" height="30">
+                      ${vt_cavalos[ordem[i]]} - ${vt_somatotal[ordem[i]].toFixed(1)}s
+                    </div>`;
+                }
+
+                txt_cavalo.innerHTML += `<br><h4>Tempos Finais:</h4>`;
+                for (let i = ordem.length - 1; i >= 0; i--) {
+                  txt_cavalo.innerHTML += `
+                    <div style="display: flex; align-items: center; gap: 0.5rem;">
+                      <img src="img/cavalo-correndo.gif" width="40" height="30">
+                      ${vt_cavalos[ordem[i]]} - ${vt_somatotal[ordem[i]].toFixed(1)}s
+                    </div>`;
+                }
+
+                trocarMusica(3);
+                document.body.style.backgroundImage = "url('./img/final-podio.jpg')";
+              }, 3000);
             }
 
-            document.getElementById("txt_cavalo").style.display = "flex";
-
-            vt_cavalos.push(nomecavalo);
-            vt_somatotal.push(0);
-            ipt_cavalo.value = "";
-            txt_cavalo.innerHTML += `<span> <b style="color: var(--red)">${nomecavalo}</b>, cadastrado no torneio! </span><br>`;
-
-            if (vt_cavalos.length === quantidadeCavalo) {
-                document.getElementById("voltasContent").style.display = "flex";
-                document.getElementById("voltasContent").style.marginTop = "5rem";
-                document.getElementById("cavaloContent").style.display = 'none';
-                document.getElementById("title").style.display = 'none';
-                document.getElementById("txt_cavalo").style.display = 'none';
-            }
-        }
-
-        function volta() {
-            var voltasTotal = Number(ipt_voltas.value);
-
-            if (vt_cavalos.length < 2 || vt_cavalos.length > 6) {
-                alert("Cadastre entre 2 e 6 cavalos.");
-                return;
-            }
-
-            if (voltasTotal < 5 || voltasTotal > 10) {
-                alert("Voltas devem estar entre 5 e 10.");
-                return;
-            }
-
-            txt_cavalo.innerHTML = "";
-            document.getElementById("txt_cavalo").style.display = "none";
-            document.getElementById("loader").style.display = "flex";
-            document.getElementById("loader").style.marginTop = "5rem";
-            document.getElementById("txt_volta").style.display = "flex";
-            document.getElementById("txt_podio").style.display = "flex";
-            
-            for (let volta = 1; volta <= voltasTotal; volta++) {
-                (function (voltaAtual, rodada) {
-                    setTimeout(function () {
-                         txt_podio.innerHTML = "";
-                        for (let i = 0; i < vt_cavalos.length; i++) {
-                            let tempo = Number((Math.random() * 2 + 7).toFixed(1));
-                            vt_somatotal[i] += tempo;
-                            txt_volta.innerHTML = `<b>Volta ${voltaAtual}</b> `;
-
-                            txt_podio.innerHTML += `<br> Cavalo ${vt_cavalos[i]} fez ${tempo}s - Acumulado: 
-                            ${vt_somatotal[i].toFixed(1)}s<br>`
-                        }
-
-                        let indicesOrdenados = vt_somatotal.map((v, i) => i)
-                            .sort((a, b) => vt_somatotal[a] - vt_somatotal[b]);
-
-                        txt_podio.innerHTML += `<u>Classificação Parcial:</u><br>`;
-                        txt_podio.innerHTML += `1º - ${vt_cavalos[indicesOrdenados[0]]}<br>`;
-                        txt_podio.innerHTML += `2º - ${vt_cavalos[indicesOrdenados[1]]}<br>`;
-                        txt_podio.innerHTML += `3º - ${vt_cavalos[indicesOrdenados[2]]}<br><hr>`;
-
-                        if (rodada === voltasTotal - 1) {
-                            setTimeout(() => {
-                                txt_podio.innerHTML += `<h3>Pódio PuroSangue.Dev</h3>`;
-                                txt_podio.innerHTML += `${vt_cavalos[indicesOrdenados[0]]} - ${vt_somatotal[indicesOrdenados[0]].toFixed(1)}s<br>`;
-                                txt_podio.innerHTML += `${vt_cavalos[indicesOrdenados[1]]} - ${vt_somatotal[indicesOrdenados[1]].toFixed(1)}s<br>`;
-                                txt_podio.innerHTML += `${vt_cavalos[indicesOrdenados[2]]} - ${vt_somatotal[indicesOrdenados[2]].toFixed(1)}s<br><br>`;
-
-                                txt_podio.innerHTML += `<h4>Tempos Finais (do último pro primeiro):</h4>`;
-                                for (let i = indicesOrdenados.length - 1; i >= 0; i--) {
-                                    txt_cavalo.innerHTML += `${vt_cavalos[indicesOrdenados[i]]} - ${vt_somatotal[indicesOrdenados[i]].toFixed(1)}s<br>`;
-                                }
-
-                                document.getElementById("loader").style.display = "none";
-
-                            }, 3000); // Espera 3s após a última volta
-                        }
-
-                    }, 3000 * rodada);
-                })(volta, volta - 1);
-            }
-        }
-
-        function iniciar() {
-            document.getElementById("btnIniciar").style.display = 'none';
-            var cavaloConteudo = document.getElementById("cavaloContent");
-            cavaloConteudo.style.display = 'flex';
-            cavaloConteudo.style.marginTop = '-5rem';
-        }
-    </script>
-
+          }, 3000 * rodada);
+        })(volta, volta - 1);
+      }
+    }
+  </script>
 </body>
 </html>
